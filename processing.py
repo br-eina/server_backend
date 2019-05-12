@@ -57,7 +57,7 @@ if __name__ == '__main__':
     imReference = cv2.imread(refImage, cv2.IMREAD_COLOR)
 
     # Read image to be aligned
-    phImage = "PICS_11.05/photo/photo6.jpg"
+    phImage = "PICS_12.05/photo/photo11.jpg"
     im = cv2.imread(phImage, cv2.IMREAD_COLOR)
 
     # Align images
@@ -67,36 +67,66 @@ if __name__ == '__main__':
     aligned_image = "PICS_11.05/first_align/aligned6.jpg"
     cv2.imwrite(aligned_image, imReg)
 
-    # Read second reference image
-    refImage2 = "PICS_11.05/thresholded/new_form.jpg"
+    img = cv2.imread(aligned_image, 0)
+    th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 91, 12)
+
+    outFileName = "PICS_11.05/first_align/thresholded6.jpg"
+    cv2.imwrite(outFileName, th)
+
+
+    # Read form1 reference image
+    refImage1 = "PICS_12.05/form1.jpg"
+    imReference1 = cv2.imread(refImage1, cv2.IMREAD_COLOR)
+
+    # Read image to be aligned
+    # phImage = "PICS_11.05/thresholded/thresholded6.jpg"
+    im1 = cv2.imread(outFileName, cv2.IMREAD_COLOR)
+
+    # Alignment with form1
+    imReg1, h, imMathces = align_images(im1, imReference1)
+
+    # Saving of aligned image to the disc
+    aligned_image1 = "PICS_12.05/align_form1/aligned1.jpg"
+    cv2.imwrite(aligned_image1, imReg1)
+
+    # Read form2 reference image
+    refImage2 = "PICS_12.05/form2.jpg"
     imReference2 = cv2.imread(refImage2, cv2.IMREAD_COLOR)
 
-    # Read second image to be aligned
+    # Read image to be aligned
     # phImage = "PICS_11.05/thresholded/thresholded6.jpg"
-    im2 = cv2.imread(aligned_image, cv2.IMREAD_COLOR)
+    im2 = cv2.imread(aligned_image1, cv2.IMREAD_COLOR)
 
-    # Second alignment
+    # Alignment with form2
     imReg2, h, imMathces = align_images(im2, imReference2)
 
-    # Second saving of aligned image to the disc
-    aligned_image2 = "PICS_11.05/second_align/aligned6.jpg"
+    # Saving of aligned image to the disc
+    aligned_image2 = "PICS_12.05/align_form2/aligned1.jpg"
     cv2.imwrite(aligned_image2, imReg2)
 
-    # Read third image to be aligned
+
+    # Read form3 reference image
+    refImage3 = "PICS_12.05/form3.jpg"
+    imReference3 = cv2.imread(refImage3, cv2.IMREAD_COLOR)
+
+    # Read image to be aligned
     # phImage = "PICS_11.05/thresholded/thresholded6.jpg"
     im3 = cv2.imread(aligned_image2, cv2.IMREAD_COLOR)
 
-    # Third alignment
-    imReg3, h, imMathces = align_images(im3, imReference2)
+    # Alignment with form3
+    imReg3, h, imMathces = align_images(im3, imReference3)
 
-    # Third saving of aligned image to the disc
-    aligned_image3 = "PICS_11.05/second_align/aligned6.jpg"
+    # Saving of aligned image to the disc
+    aligned_image3 = "PICS_12.05/align_form3/aligned11.jpg"
     cv2.imwrite(aligned_image3, imReg3)
 
-    img = cv2.imread(aligned_image3, 0)
-    th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 91, 12)
 
-    outFileName = "PICS_11.05/thresholded/thresholded6.jpg"
-    cv2.imwrite(outFileName, th)
+
+
+    # img = cv2.imread(aligned_image3, 0)
+    # th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 91, 12)
+
+    # outFileName = "PICS_11.05/thresholded/12.05/thresholded6.jpg"
+    # cv2.imwrite(outFileName, th)
 
     

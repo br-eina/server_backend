@@ -4,8 +4,13 @@ import numpy as np
 import pytesseract
 import os
 import csv
+import json
 
-coordinates = "PICS_11.05/cropped/coordinates.csv"
+
+number = input()
+
+
+coordinates = "PICS_12.05/coordinates.csv"
 with open(coordinates, 'r') as csv_file:
     csv_reader = csv.DictReader(csv_file, delimiter=";")
 
@@ -23,7 +28,7 @@ x1 = [int(i) for i in x1]
 y2 = [int(i) for i in y2]
 x2 = [int(i) for i in x2]
 
-refImage = "pics/thresholded_image.jpg"
+refImage = "PICS_12.05/align_form3/aligned{0}.jpg".format(number)
 img = cv2.imread(refImage, cv2.IMREAD_COLOR)
 
 recognized_json = []
@@ -39,7 +44,7 @@ for i in range(len(y1)):
     # cropped = img[start_row:end_row, start_col:end_col]
 
 
-    cropped_image = "PICS_11.05/cropped/image777/cropped_{0}.jpg".format(i)
+    cropped_image = "PICS_12.05/align_form3/cropped{1}/cropped_{0}.jpg".format(i, number)
     cv2.imwrite(cropped_image, img[start_row:end_row, start_col:end_col])
     text = pytesseract.image_to_string(Image.open(cropped_image))
     text_mas.append(text)
@@ -54,7 +59,22 @@ for i in range(len(y1)):
 for i in range(len(names)):
     new_json.append({"title" : names[i], "value" : text_mas[i]})
 
-print(new_json)
+
+
+def writeToJSONFile(path, file_name, data):
+    file_name_extension = './' + path + '/' + file_name + '.txt'
+    with open(file_name_extension, 'w') as file:
+        json.dump(data, file)
+
+
+path = './PICS_12.05/align_form3/cropped{0}'.format(number)
+file_name = 'recognized_data'
+
+writeToJSONFile(path, file_name, new_json)
+
+
+
+# print(new_json)
 
 
 # print(recognized_json)

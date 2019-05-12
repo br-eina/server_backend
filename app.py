@@ -6,6 +6,7 @@ import io
 import csv
 import pytesseract
 from PIL import Image 
+import json
 
 app = Flask(__name__)
 
@@ -80,7 +81,7 @@ def stringToRGB(base64_string):
 
 def processing():
     # Read reference image
-    path_reference_image = "PICS_11.05/form.jpg"
+    path_reference_image = "pics/forms/form.jpg"
     reference_image = cv2.imread(path_reference_image, cv2.IMREAD_COLOR)
 
     # Base64 string to image
@@ -105,41 +106,53 @@ def processing():
     path_aligned_image = "pics/aligned_image.jpg"
     cv2.imwrite(path_aligned_image, aligned_image)
 
-    # Read second reference image
-    path_reference_image2 = "PICS_11.05/thresholded/new_form.jpg"
-    reference_image2 = cv2.imread(path_reference_image2, cv2.IMREAD_COLOR)
+    img = cv2.imread(path_aligned_image, 0)
+    th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 91, 12)
 
-    # Read second image to be aligned
-    # phImage = "PICS_11.05/thresholded/thresholded6.jpg"
-    im2 = cv2.imread(path_aligned_image, cv2.IMREAD_COLOR)
+    outFileName = "PICS_11.05/first_align/thresholded6.jpg"
+    cv2.imwrite(outFileName, th)
 
-    # Second alignment
-    imReg2, h, imMathces = align_images(im2, reference_image2)
+    # Read form1 reference image
+    path_form1 = "pics/forms/form1.jpg"
+    form1 = cv2.imread(path_form1, cv2.IMREAD_COLOR)
 
-    # Second saving of aligned image to the disc
-    aligned_image2 = "PICS_11.05/second_align/aligned6.jpg"
+    # Read image to be aligned
+    im1 = cv2.imread(outFileName, cv2.IMREAD_COLOR)
+
+    # Alignment with form1
+    imReg1, h, imMathces = align_images(im1, form1)
+
+    # Saving of aligned image to the disc
+    aligned_image1 = "PICS_11.05/second_align/aligned6.jpg"
+    cv2.imwrite(aligned_image1, imReg1)
+
+    # Read form2 reference image
+    path_form2 = "pics/forms/form2.jpg"
+    form2 = cv2.imread(path_form2, cv2.IMREAD_COLOR)
+
+    # Read image to be aligned
+    im2 = cv2.imread(aligned_image1, cv2.IMREAD_COLOR)
+
+    # Alignment with form2
+    imReg2, h, imMathces = align_images(im2, form2)
+
+    # Saving of aligned image to the disc
+    aligned_image2 = "PICS_12.05/align_form2/aligned1.jpg"
     cv2.imwrite(aligned_image2, imReg2)
 
-    # Read third image to be aligned
-    # phImage = "PICS_11.05/thresholded/thresholded6.jpg"
+    # Read form3 reference image
+    path_form3 = "pics/forms/form3.jpg"
+    form3 = cv2.imread(path_form3, cv2.IMREAD_COLOR)
+
+    # Read image to be aligned
     im3 = cv2.imread(aligned_image2, cv2.IMREAD_COLOR)
 
-    # Third alignment
-    imReg3, h, imMathces = align_images(im3, reference_image2)
+    # Alignment with form3
+    imReg3, h, imMathces = align_images(im3, form3)
 
-    # Third saving of aligned image to the disc
-    aligned_image3 = "PICS_11.05/second_align/aligned6.jpg"
+    # Saving of aligned image to the disc
+    aligned_image3 = "pics/thresholded_image.jpg"
     cv2.imwrite(aligned_image3, imReg3)
-
-    # Read aligned image
-    to_threshold = cv2.imread(aligned_image3, 0)
-
-    # Threshold aligned image    
-    thresholded_image = cv2.adaptiveThreshold(to_threshold, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 91, 12)
-
-    # Saving thresholded image 
-    path_thresholded_image = "pics/thresholded_image.jpg"
-    cv2.imwrite(path_thresholded_image, thresholded_image)
 
     # Opening thresholded image as base64 string
     with open("pics/thresholded_image.jpg", 'rb') as image_file:
@@ -196,6 +209,11 @@ def crop_im():
         for i in range(len(names)):
                 new_json.append({"title" : names[i], "value" : text_mas[i]})
 
+        path = './pics/cropped'
+        file_name = 'recognized_data'
+
+        write_json_to_file(path, file_name, new_json)
+
         
         
 
@@ -205,6 +223,11 @@ def open_save():
 
         immage = "pics/cropped/immage.jpg"
         cv2.imwrite(immage, im)
+
+def write_json_to_file(path, file_name, data):
+        file_name_extension = './' + path + '/' + file_name + '.txt'
+        with open(file_name_extension, 'w') as file:
+                json.dump(data, file)
 
 
 @app.route('/', methods=['GET'])
